@@ -3,37 +3,36 @@
 #include "config/video.h"
 
 // Parameters:
-//   w: width of the image
-//   h: height of the imag
-//   durationMovie: duration in seconds of the movie (colored image)
-//   durationCredits: duration in seconds of credits (black/white image)
-//   unit: Unit of the output value. It could be 'bt' for bytes, 'ko' for kilobits, 'mo' for megabits, 'go' for gigabits
+//   w: width of the image
+//   h: height of the image
+//   durationMovie: duration in second of movie (colored image)
+//   durationCredits: duration in second of credit (image Black/White)
+//   unit: Unit of the output value. It could be 'bt' byte, 'ko' kilobits, 'mo' megabits, 'go' gigabits
 // Return value
-//   colored video size (based on the unit passed parameter)
+//   colored video size (based on the unit passed parametter)
 float video(int w, int h, int durationMovie, int durationCredits, int fps, char* unit) {
-    // Bits per pixel for colored image (24 bits)
-    float bitsPerPixel = 24;
-
-    float clrImage = w * h * bitsPerPixel * durationMovie * fps;
-    float BImage = w * h * durationCredits * fps;
-    float sizeInBits = clrImage + BImage; // Add to total size in bits
-    float size;
-
-
-
-    // Convert size based on the requested unit
-    if (strcmp(unit, "bt") == 0) {
-        size = sizeInBits; // Convert to bytes
-    } else if (strcmp(unit, "ko") == 0) {
-        size = sizeInBits / (1024); // Convert to kilobits
-    } else if (strcmp(unit, "mo") == 0) {
-        size = sizeInBits / (1024 * 1024); // Convert to megabits
-    } else if (strcmp(unit, "go") == 0) {
-        size = sizeInBits / (1024 * 1024 * 1024); // Convert to gigabits
-    } else {
-        // If the unit is not recognized, return -1 or some error value
-        return -1.0f;
-    }
-
-    return size / 8;
+   // Constants for unit conversion
+    const float BYTE_TO_KB = 8* 1024.0;
+    const float BYTE_TO_MB = 8*1024.0 * 1024.0;
+    const float BYTE_TO_GB = 8*1024.0 * 1024.0 * 1024.0;
+    // Calculate size of the colored section (RGB: 3 bytes per pixel)
+    float colorSectionSize = (float)w * h 8 3* fps * durationMovie;
+    // Calculate size of the black-and-white section (1 byte per pixel)
+    float bwSectionSize = (float)w * h * 1 * fps * durationCredits;
+    // Total size in bytes
+    float totalSize = colorSectionSize + bwSectionSize;
+// Convert size based on the specified unit
+    if (strcmp(unit, "bt") == 0) {
+        return (float)totalSize; // Bytes
+    } else if (strcmp(unit, "ko") == 0) {
+        return (float)totalSize / BYTE_TO_KB; // Kilobytes
+    } else if (strcmp(unit, "mo") == 0) {
+        return (float)totalSize / BYTE_TO_MB; // Megabytes
+    } else if (strcmp(unit, "go") == 0) {
+        return (float)totalSize / BYTE_TO_GB; // Gigabytes
+    } else {
+        // Invalid unit, print an error message and return 0
+        fprintf(stderr, "Error: Invalid unit '%s'. Please use 'bt', 'ko', 'mo', or 'go'.\n", unit);
+        return 0;
+    }
 }

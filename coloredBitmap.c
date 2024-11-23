@@ -1,4 +1,5 @@
 #include <string.h>
+#include <stdio.h>
 #include "config/coloredBitmap.h"
 // Parameters:
 //   w: width of the image
@@ -7,18 +8,24 @@
 // Return value
 //   colored image size Bitmap (based on the unit passed parametter)
 float coloredBitmap(int w, int h, char* unit) {
-   // YOUR CODE HERE - BEGIN
-long long sizeInBits = (long long)w * h * 3 * 8; // 3 bytes per pixel, converted to bits
-
-   if (strcmp(unit, "bt") == 0) {
-       return (float)sizeInBits; // Size in bits
-   } else if (strcmp(unit, "ko") == 0) {
-       return sizeInBits / 1024.0; // Size in kilobits
-   } else if (strcmp(unit, "mo") == 0) {
-       return sizeInBits / (1024.0 * 1024); // Size in megabits
-   } else if (strcmp(unit, "go") == 0) {
-       return sizeInBits / (1024.0 * 1024 * 1024); // Size in gigabits
-   }
-   // YOUR CODE HERE - END
-   return 0;
+  // Calculate size in bits (24 bits per pixel for RGB)
+   float sizeInBits = (float)w * h * 24;
+// Convert size based on the unit
+    if (strcmp(unit, "bt") == 0) {
+        // Return size in bits
+        return (float)sizeInBits;
+    } else if (strcmp(unit, "ko") == 0) {
+        // Convert to kilobits
+        return sizeInBits / (8*1024.0);
+    } else if (strcmp(unit, "mo") == 0) {
+        // Convert to megabits
+        return sizeInBits / (8*1024.0 * 1024);
+    } else if (strcmp(unit, "go") == 0) {
+        // Convert to gigabits
+        return sizeInBits / (8*1024.0 * 1024 * 1024);
+    } else {
+        // If the unit is invalid, print an error message and return 0
+        printf("Invalid unit: %s\n", unit);
+        return 0;
+    }
 }
